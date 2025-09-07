@@ -1,34 +1,14 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
-<head><meta charset="utf-8"><title>Rapyd CORS PoC (safe)</title></head>
 <body>
-<h3>Rapyd CORS PoC (safe)</h3>
-<pre id="out">Running test…</pre>
+<h3>Rapyd CORS PoC (Safe)</h3>
 <script>
-(async () => {
-  const out = document.getElementById('out');
-  try {
-    const res = await fetch('https://dashboard.rapyd.net/v1/users', {
-      method: 'OPTIONS' // use OPTIONS or HEAD/GET — OPTIONS is safest to probe CORS policy
-      // NOTE: do NOT set credentials: 'include' here for the public PoC; for private repro you can.
-    });
-
-    // Show safe, non-sensitive indicators only:
-    out.innerText = [
-      'status: ' + res.status,
-      '',
-      'Access-Control-Allow-Origin: ' + (res.headers.get('access-control-allow-origin') || 'NOT SET'),
-      'Access-Control-Allow-Credentials: ' + (res.headers.get('access-control-allow-credentials') || 'NOT SET'),
-      '',
-      'Vary: ' + (res.headers.get('vary') || 'NOT SET'),
-      '',
-      'NOTE: This PoC does NOT fetch or display user data. It only checks CORS headers.'
-    ].join('\n');
-
-  } catch (err) {
-    out.innerText = 'Fetch error: ' + err;
-  }
-})();
+fetch('https://dashboard.rapyd.net/v1/users', {
+  method: 'GET',
+  credentials: 'include'
+})
+.then(res => console.log('Response status:', res.status))
+.catch(err => console.log('Fetch error (expected with no session):', err));
 </script>
 </body>
 </html>
