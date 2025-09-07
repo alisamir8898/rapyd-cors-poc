@@ -1,14 +1,34 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Rapyd CORS PoC (Safe)</title>
+</head>
 <body>
-<h3>Rapyd CORS PoC (Safe)</h3>
-<script>
-fetch('https://dashboard.rapyd.net/v1/users', {
-  method: 'GET',
-  credentials: 'include'
-})
-.then(res => console.log('Response status:', res.status))
-.catch(err => console.log('Fetch error (expected with no session):', err));
-</script>
+  <h2>Rapyd CORS PoC (Safe)</h2>
+  <button id="testCORS">Test CORS</button>
+  <pre id="output"></pre>
+
+  <script>
+    const btn = document.getElementById('testCORS');
+    const output = document.getElementById('output');
+
+    btn.onclick = async () => {
+      try {
+        const res = await fetch('https://dashboard.rapyd.net/v1/users', {
+          method: 'GET',
+          credentials: 'include'  // يحاول إرسال الكوكيز لو فيه session
+        });
+
+        output.textContent = `
+Response status: ${res.status}
+Access-Control-Allow-Origin: ${res.headers.get('access-control-allow-origin')}
+Access-Control-Allow-Credentials: ${res.headers.get('access-control-allow-credentials')}
+        `;
+      } catch (err) {
+        output.textContent = `Fetch error: ${err}`;
+      }
+    };
+  </script>
 </body>
 </html>
