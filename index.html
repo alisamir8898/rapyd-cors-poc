@@ -1,34 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Rapyd CORS PoC (Safe)</title>
+<meta charset="UTF-8">
+<title>Rapyd CORS PoC (Safe)</title>
 </head>
 <body>
-  <h2>Rapyd CORS PoC (Safe)</h2>
-  <button id="testCORS">Test CORS</button>
-  <pre id="output"></pre>
+<h2>Rapyd CORS Misconfiguration PoC</h2>
+<pre id="output"></pre>
 
-  <script>
-    const btn = document.getElementById('testCORS');
-    const output = document.getElementById('output');
+<script>
+const output = document.getElementById('output');
 
-    btn.onclick = async () => {
-      try {
+// الدالة اللي هتعمل request
+async function testCORS() {
+    try {
         const res = await fetch('https://dashboard.rapyd.net/v1/users', {
-          method: 'GET',
-          credentials: 'include'  // يحاول إرسال الكوكيز لو فيه session
+            method: 'GET',
+            credentials: 'include' // مهمة عشان تبعت session cookies
         });
 
-        output.textContent = `
-Response status: ${res.status}
-Access-Control-Allow-Origin: ${res.headers.get('access-control-allow-origin')}
-Access-Control-Allow-Credentials: ${res.headers.get('access-control-allow-credentials')}
-        `;
-      } catch (err) {
-        output.textContent = `Fetch error: ${err}`;
-      }
-    };
-  </script>
+        // نجمع الـ headers في object
+        let headers = {};
+        for (let pair of res.headers.entries()) {
+            headers[pair[0]] = pair[1];
+        }
+
+        const data = {
+            status: res.status,
+            statusText: res.statusText,
+            headers: headers
+        };
+
+        output.textContent = JSON.stringify(data, null, 2);
+    } catch (err) {
+        output.textContent = 'Error: ' + err;
+    }
+}
+
+// نفّذ الدالة
+testCORS();
+</script>
 </body>
 </html>
